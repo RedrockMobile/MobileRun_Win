@@ -1,0 +1,24 @@
+﻿<UserControl
+    x:Class="MobileRun_Win.Control.RunMaps"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MobileRun_Win.Control"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid>
+        <maps:MapControl x:Name="maps" MapServiceToken="T4DeccT6HfMqdeqjZz3i~2n9-MSjYsGdZeEf6jfWfUg~Ak__Dqs4NC81SlS4yrjnIOAtSg6GHJwwD9pX0hDaiZUMebq0q8UEGn714k60FduQ" ZoomLevel="18">
+            <Grid x:Name="user_point">
+                <Ellipse Height="25" Width="25" Stroke="Gray" StrokeThickness="2" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center"></Ellipse>
+                <Ellipse Height="13" Width="13" Fill="Gray" HorizontalAlignment="Center" VerticalAlignment="Center"></Ellipse>
+            </Grid>
+        </maps:MapControl>
+        <StackPanel x:Name="command_board" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <Button x:Name="find_me" Content="找到我的位置" Click="find_me_Click"></Button>
+        </StackPanel>
+    </Grid>
+</UserControl>
