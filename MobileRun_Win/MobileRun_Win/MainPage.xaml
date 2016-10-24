@@ -5,19 +5,11 @@
     xmlns:local="using:MobileRun_Win"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:control="using:MobileRun_Win.Control"
-    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
     mc:Ignorable="d">
     <Page.Resources>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <!--<maps:MapControl x:Name="maps" MapServiceToken="T4DeccT6HfMqdeqjZz3i~2n9-MSjYsGdZeEf6jfWfUg~Ak__Dqs4NC81SlS4yrjnIOAtSg6GHJwwD9pX0hDaiZUMebq0q8UEGn714k60FduQ" ZoomLevel="20" ZoomLevelChanged="maps_ZoomLevelChanged">
-            <Grid x:Name="user_point" maps:MapControl.Location="{Binding ElementName=maps,Path=Center}">
-                <Ellipse Height="25" Width="25" Stroke="Gray" StrokeThickness="2" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center"></Ellipse>
-                <Ellipse Height="13" Width="13" Fill="Gray" HorizontalAlignment="Center" VerticalAlignment="Center"></Ellipse>
-            </Grid>
-        </maps:MapControl>-->
-        <control:RunMaps x:Name="maps"></control:RunMaps>
+        <Frame x:Name="main_frame"></Frame>
     </Grid>
 </Page>

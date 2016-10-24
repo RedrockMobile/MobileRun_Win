@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
@@ -33,9 +34,49 @@ namespace MobileRun_Win.Control
         public RunMaps()
         {
             this.InitializeComponent();
+            //App.Current.Resuming += Current_Resuming;
             lines = new List<BasicGeoposition>();
             GetLoaction();
         }
+
+        //private async void Current_Resuming(object sender, object e) //应用从后台进入前台
+        //{
+        //    StorageFolder folder = ApplicationData.Current.LocalFolder;
+        //    try
+        //    {
+        //        StorageFile file = await folder.GetFileAsync("postions_list.mr");
+        //        if (file != null)
+        //        {
+        //            IList<string> lines = await FileIO.ReadLinesAsync(file, Windows.Storage.Streams.UnicodeEncoding.Utf8);
+        //            for (int i = 0; i < lines.Count; i++)
+        //            {
+        //                string[] datas = lines[i].Split(','); //获取数据
+        //                BasicGeoposition new_position = new BasicGeoposition
+        //                {
+        //                    Altitude = Convert.ToDouble(datas[0]),
+        //                    Latitude = Convert.ToDouble(datas[1]),
+        //                    Longitude = Convert.ToDouble(datas[2])
+        //                };
+        //                this.lines.Add(new_position);
+        //                MapPolyline temp_line = new MapPolyline() //创建新的MapPolyline以绘制路径
+        //                {
+        //                    StrokeColor = Colors.Cyan,
+        //                    StrokeThickness = 10,
+        //                    StrokeDashed = false
+        //                };
+        //                temp_line.Path = new Geopath(new List<BasicGeoposition>() //添加起始点和终点以设置MapPolyline的路径
+        //                {
+        //                    this.lines[lines.Count - 2],
+        //                    this.lines[lines.Count - 1]
+        //                });
+        //                maps.MapElements.Add(temp_line); //将MapPolyline添加到地图控件中
+        //            }
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //    }
+        //}
 
         private async void GetLoaction()
         {
@@ -45,12 +86,12 @@ namespace MobileRun_Win.Control
                 case GeolocationAccessStatus.Unspecified: //未授权获取地理位置
                     {
                         new MessageDialog("您未授权约跑获取设备的地理位置\n请前往设置", "约跑");
-                        await Launcher.LaunchUriAsync(new Uri("ms-settings-location"));
+                        await Launcher.LaunchUriAsync(new Uri("ms-settings://privacy/location"));
                     }; break;
                 case GeolocationAccessStatus.Denied: //已拒绝获取地理位置
                     {
                         new MessageDialog("您已拒绝约跑获取设备的地理位置\n请前往设置", "约跑");
-                        await Launcher.LaunchUriAsync(new Uri("ms-settings-location"));
+                        await Launcher.LaunchUriAsync(new Uri("ms-settings://privacy/location"));
                     }; break;
             }
             if (access_status != GeolocationAccessStatus.Allowed)
@@ -76,7 +117,10 @@ namespace MobileRun_Win.Control
             if ((distance) / (time_delta.TotalSeconds) > 5) //判断标准：人正常跑步的速度为4m/s左右
                 return false;
             else
+            {
+                this.distance.Text = "位置移动了" + distance + "m";
                 return true;
+            }
         }
 
         private double GetDistance(double la1, double lon1, double la2, double lon2) //获得两坐标点之间的距离，单位：m

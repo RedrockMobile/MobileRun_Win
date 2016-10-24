@@ -41,7 +41,7 @@ namespace MobileRun_Win
 
             if (e.NavigationMode == NavigationMode.New)
             {
-                //GetLoaction();
+                main_frame.Navigate(typeof(Pages.RunPage));
             }
         }
     }

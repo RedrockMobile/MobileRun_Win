@@ -19,6 +19,7 @@
         </maps:MapControl>
         <StackPanel x:Name="command_board" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Top">
             <Button x:Name="find_me" Content="找到我的位置" Click="find_me_Click"></Button>
+            <TextBlock x:Name="distance"></TextBlock>
         </StackPanel>
     </Grid>
 </UserControl>
