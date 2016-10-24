@@ -9,8 +9,12 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <control:RunMaps x:Name="maps"></control:RunMaps>
-        <Button Content="Click" Click="Button_Click" HorizontalAlignment="Left" VerticalAlignment="Top"></Button>
-        <TextBlock x:Name="report" HorizontalAlignment="Left" VerticalAlignment="Bottom"></TextBlock>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Button Content="开始记录" Click="Button_Click" HorizontalAlignment="Left" VerticalAlignment="Top"></Button>
+        <control:RunMaps x:Name="maps" Grid.Row="1"></control:RunMaps>
+        <TextBlock x:Name="report" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Bottom"></TextBlock>
     </Grid>
 </Page>

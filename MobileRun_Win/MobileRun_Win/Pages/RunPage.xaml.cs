@@ -43,7 +43,15 @@ namespace MobileRun_Win.Pages
                 trigger = new DeviceUseTrigger();
                 timer = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 5) };
                 timer.Tick += Timer_Tick;
+                App.Current.Suspending += Current_Suspending;
             }
+        }
+
+        private void Current_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        {
+            var deferral = e.SuspendingOperation.GetDeferral();
+            ApplicationData.Current.LocalSettings.Values["is_app_active"] = false;
+            deferral.Complete();
         }
 
         private async void Timer_Tick(object sender, object e)
@@ -67,9 +75,6 @@ namespace MobileRun_Win.Pages
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
-            //if (await StartBackgroundTask())
-            //    new MessageDialog("后台任务启动成功", "约跑");
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -91,30 +96,41 @@ namespace MobileRun_Win.Pages
             }
 
             BackgroundAccessStatus backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
-            BackgroundTaskBuilder builder = new BackgroundTaskBuilder() { Name = App.geolocator_task_name, TaskEntryPoint = App.geolocator_task_entrypoint };
-            builder.SetTrigger(trigger);
-            registration = builder.Register();
-            registration.Completed += Registration_Completed;
+            switch (backgroundAccessStatus)
+            {
+                case BackgroundAccessStatus.Unspecified:
+                case BackgroundAccessStatus.Denied: break; //无法运行后台任务
 
-            try
-            {
-                DeviceTriggerResult result = await trigger.RequestAsync(accelerometer.DeviceId);
-                switch (result) //判断触发器请求的结果
-                {
-                    case DeviceTriggerResult.Allowed: { started = true; }; break;
-                    case DeviceTriggerResult.LowBattery: break;
-                    case DeviceTriggerResult.DeniedBySystem: break;
-                    case DeviceTriggerResult.DeniedByUser: break;
-                }
+                default: break; //后台任务已经注册
             }
-            catch (Exception) //之前的后台任务仍然在运行
+
+            if (trigger != null)
             {
-                foreach (var item in BackgroundTaskRegistration.AllTasks.Values)
+                BackgroundTaskBuilder builder = new BackgroundTaskBuilder() { Name = App.geolocator_task_name, TaskEntryPoint = App.geolocator_task_entrypoint };
+                builder.SetTrigger(trigger);
+                registration = builder.Register();
+                registration.Completed += Registration_Completed;
+
+                try
                 {
-                    if (App.geolocator_task_name == item.Name)
+                    DeviceTriggerResult result = await trigger.RequestAsync(accelerometer.DeviceId);
+                    switch (result) //判断触发器请求的结果
                     {
-                        item.Unregister(true);
-                        break;
+                        case DeviceTriggerResult.Allowed: { started = true; }; break;
+                        case DeviceTriggerResult.LowBattery: break;
+                        case DeviceTriggerResult.DeniedBySystem: break;
+                        case DeviceTriggerResult.DeniedByUser: break;
+                    }
+                }
+                catch (Exception) //之前的后台任务仍然在运行
+                {
+                    foreach (var item in BackgroundTaskRegistration.AllTasks.Values)
+                    {
+                        if (App.geolocator_task_name == item.Name)
+                        {
+                            item.Unregister(true);
+                            break;
+                        }
                     }
                 }
             }
