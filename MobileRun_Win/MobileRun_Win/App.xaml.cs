@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Storage;
 
 namespace MobileRun_Win
 {
@@ -41,7 +42,7 @@ namespace MobileRun_Win
         /// 将在启动应用程序以打开特定文件等情况下使用。
         /// </summary>
         /// <param name="e">有关启动请求和过程的详细信息。</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
@@ -73,7 +74,19 @@ namespace MobileRun_Win
             {
                 if (rootFrame.Content == null)
                 {
-                    ApplicationData.Current.LocalSettings.Values["is_app_active"] = true;
+                    try //删除positions_list.txt
+                    {
+                        StorageFolder folder = ApplicationData.Current.LocalFolder;
+                        StorageFile file = await folder.GetFileAsync("postions_list.txt");
+                        if (file != null)
+                        {
+                            await file.DeleteAsync();
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    ApplicationData.Current.LocalSettings.Values["is_app_active"] = true; //注明APP处于前台
                     // 当导航堆栈尚未还原时，导航到第一页，
                     // 并通过将所需信息作为导航参数传入来配置
                     // 参数

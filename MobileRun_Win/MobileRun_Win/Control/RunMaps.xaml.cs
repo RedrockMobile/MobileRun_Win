@@ -27,56 +27,96 @@ namespace MobileRun_Win.Control
 {
     public sealed partial class RunMaps : UserControl
     {
+        private bool is_adding_new_positions_from_back;
+
         private DateTime last_date;
         private Geolocator geolocator;
         private List<BasicGeoposition> lines;
 
+        public string[] NewPositionsFromBack //后台传来的新位置
+        {
+            get
+            {
+                return ((string[])GetValue(NewPositionsFromBackProperty));
+            }
+            set
+            {
+                SetValue(NewPositionsFromBackProperty, value);
+            }
+        }
+        private static readonly DependencyProperty NewPositionsFromBackProperty = DependencyProperty.Register("NewPositionsFromBack", typeof(string[]), typeof(RunMaps), new PropertyMetadata(null, new PropertyChangedCallback(GetNewPositionsFromBack)));
+
+        private static async void GetNewPositionsFromBack(DependencyObject d, DependencyPropertyChangedEventArgs e) //处理后台传来的新位置
+        {
+            RunMaps rm = d as RunMaps;
+            if (rm != null)
+            {
+                try
+                {
+                    await rm.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        rm.is_adding_new_positions_from_back = true;
+                        for (int i = 0; i < rm.NewPositionsFromBack.Length; i++)
+                        {
+                            string[] new_params = rm.NewPositionsFromBack[i].Split(',');
+                            rm.last_date = Convert.ToDateTime(new_params[3]);
+                            if (rm.PositionJundge(Convert.ToDouble(new_params[1]), Convert.ToDouble(new_params[2])))
+                                rm.AddNewPolyline(new_params[0], new_params[1], new_params[2]);
+                        }
+                        MapControl.SetLocation((rm.maps.Children[0] as Grid), new Geopoint(rm.lines[rm.lines.Count - 1])); //将定位点设置到新的位置
+                        rm.is_adding_new_positions_from_back = false;
+                    });
+                    StorageFolder folder = ApplicationData.Current.LocalFolder;
+                    StorageFile file = await folder.GetFileAsync("postions_list.txt");
+                    if (file != null)
+                    {
+                        await file.DeleteAsync();
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
         public RunMaps()
         {
             this.InitializeComponent();
-            //App.Current.Resuming += Current_Resuming;
+            is_adding_new_positions_from_back = false;
             lines = new List<BasicGeoposition>();
             GetLoaction();
         }
 
-        //private async void Current_Resuming(object sender, object e) //应用从后台进入前台
-        //{
-        //    StorageFolder folder = ApplicationData.Current.LocalFolder;
-        //    try
-        //    {
-        //        StorageFile file = await folder.GetFileAsync("postions_list.mr");
-        //        if (file != null)
-        //        {
-        //            IList<string> lines = await FileIO.ReadLinesAsync(file, Windows.Storage.Streams.UnicodeEncoding.Utf8);
-        //            for (int i = 0; i < lines.Count; i++)
-        //            {
-        //                string[] datas = lines[i].Split(','); //获取数据
-        //                BasicGeoposition new_position = new BasicGeoposition
-        //                {
-        //                    Altitude = Convert.ToDouble(datas[0]),
-        //                    Latitude = Convert.ToDouble(datas[1]),
-        //                    Longitude = Convert.ToDouble(datas[2])
-        //                };
-        //                this.lines.Add(new_position);
-        //                MapPolyline temp_line = new MapPolyline() //创建新的MapPolyline以绘制路径
-        //                {
-        //                    StrokeColor = Colors.Cyan,
-        //                    StrokeThickness = 10,
-        //                    StrokeDashed = false
-        //                };
-        //                temp_line.Path = new Geopath(new List<BasicGeoposition>() //添加起始点和终点以设置MapPolyline的路径
-        //                {
-        //                    this.lines[lines.Count - 2],
-        //                    this.lines[lines.Count - 1]
-        //                });
-        //                maps.MapElements.Add(temp_line); //将MapPolyline添加到地图控件中
-        //            }
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-        //    }
-        //}
+        private void AddNewPolyline(string altitude, string latitude, string longitude) //在地图中绘制新的路径
+        {
+            BasicGeoposition new_position = new BasicGeoposition //新添加的位置
+            {
+                Altitude = Convert.ToDouble(altitude),
+                Latitude = Convert.ToDouble(latitude),
+                Longitude = Convert.ToDouble(longitude)
+            };
+            AddNewPolyline(new_position);
+        }
+
+        private async void AddNewPolyline(BasicGeoposition new_position) //在地图中绘制新的路径
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                lines.Add(new_position); //将新的位置添加到点集合中
+                MapPolyline temp_line = new MapPolyline() //创建新的MapPolyline以绘制路径
+                {
+                    StrokeColor = Colors.Cyan,
+                    StrokeThickness = 10,
+                    StrokeDashed = false
+                };
+                temp_line.Path = new Geopath(new List<BasicGeoposition>() //添加起始点和终点以设置MapPolyline的路径
+                    {
+                        lines[lines.Count - 2],
+                        lines[lines.Count - 1]
+                    });
+                maps.MapElements.Add(temp_line); //将MapPolyline添加到地图控件中
+            });
+        }
 
         private async void GetLoaction()
         {
@@ -96,7 +136,7 @@ namespace MobileRun_Win.Control
             }
             if (access_status != GeolocationAccessStatus.Allowed)
                 return;
-            geolocator = new Geolocator { DesiredAccuracyInMeters = 0, ReportInterval = 5000 }; //将精确度设置成最高，并且每5s通知一次位置变化
+            geolocator = new Geolocator { DesiredAccuracy = PositionAccuracy.High, DesiredAccuracyInMeters = 0, ReportInterval = 5000 }; //将精确度设置成最高，并且每5s通知一次位置变化
             Geoposition first_location = await geolocator.GetGeopositionAsync();
             BasicGeoposition basicgeoposition = new BasicGeoposition
             {
@@ -109,6 +149,24 @@ namespace MobileRun_Win.Control
             geolocator.PositionChanged += Geolocator_PositionChanged;
             maps.Center = new Geopoint(basicgeoposition);
             MapControl.SetLocation((maps.Children[0] as Grid), maps.Center); //将定位点设置到地图中心
+        }
+
+        private bool PositionJundge(double latitude, double longtitude)
+        {
+            if (lines.Count > 0) //获取上一次的位置并且计算两点距离
+            {
+                //double last_altitude = lines[lines.Count - 1].Altitude;
+                double last_latitude = lines[lines.Count - 1].Latitude;
+                double last_longitude = lines[lines.Count - 1].Longitude;
+                double distance = GetDistance(last_latitude, last_longitude, latitude, longtitude);
+                if (PositionJundge(distance))
+                {
+                    last_date = DateTime.Now;
+                    Debug.WriteLine(distance);
+                    return true;
+                }
+            }
+            return false;
         }
 
         private bool PositionJundge(double distance) //判断距离改变是否合理
@@ -133,45 +191,51 @@ namespace MobileRun_Win.Control
 
         private async void Geolocator_PositionChanged(Geolocator sender, PositionChangedEventArgs args) //当定位获得的位置发生变化时
         {
-            try
+            if (!is_adding_new_positions_from_back) //如果没有在添加后台传来的位置
             {
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                try
                 {
-                    BasicGeoposition now_position = new BasicGeoposition //当前的位置
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
-                        Altitude = args.Position.Coordinate.Point.Position.Altitude,
-                        Latitude = args.Position.Coordinate.Point.Position.Latitude,
-                        Longitude = args.Position.Coordinate.Point.Position.Longitude
-                    };
-                    MapControl.SetLocation((maps.Children[0] as Grid), new Geopoint(now_position)); //将定位点设置到新的位置
-                    if (lines.Count > 0) //获取上一次的位置并且计算两点距离
-                    {
-                        double last_altitude = lines[lines.Count - 1].Altitude;
-                        double last_latitude = lines[lines.Count - 1].Latitude;
-                        double last_longitude = lines[lines.Count - 1].Longitude;
-                        double distance = GetDistance(last_latitude, last_longitude, now_position.Latitude, now_position.Longitude);
-                        if (!PositionJundge(distance))
+                        BasicGeoposition now_position = new BasicGeoposition //当前的位置
+                        {
+                            Altitude = args.Position.Coordinate.Point.Position.Altitude,
+                            Latitude = args.Position.Coordinate.Point.Position.Latitude,
+                            Longitude = args.Position.Coordinate.Point.Position.Longitude
+                        };
+                        if (!PositionJundge(now_position.Latitude, now_position.Longitude))
                             return;
-                        last_date = DateTime.Now;
-                        Debug.WriteLine(distance);
-                    }
-                    lines.Add(now_position); //将新的位置添加到点集合中
-                    MapPolyline temp_line = new MapPolyline() //创建新的MapPolyline以绘制路径
-                    {
-                        StrokeColor = Colors.Cyan,
-                        StrokeThickness = 10,
-                        StrokeDashed = false
-                    };
-                    temp_line.Path = new Geopath(new List<BasicGeoposition>() //添加起始点和终点以设置MapPolyline的路径
+                        //if (lines.Count > 0) //获取上一次的位置并且计算两点距离
+                        //{
+                        //    double last_altitude = lines[lines.Count - 1].Altitude;
+                        //    double last_latitude = lines[lines.Count - 1].Latitude;
+                        //    double last_longitude = lines[lines.Count - 1].Longitude;
+                        //    double distance = GetDistance(last_latitude, last_longitude, now_position.Latitude, now_position.Longitude);
+                        //    if (!PositionJundge(distance))
+                        //        return;
+                        //    last_date = DateTime.Now;
+                        //    Debug.WriteLine(distance);
+                        //}
+                        AddNewPolyline(now_position);
+                        MapControl.SetLocation((maps.Children[0] as Grid), new Geopoint(now_position)); //将定位点设置到新的位置
+                        //    lines.Add(now_position); //将新的位置添加到点集合中
+                        //    MapPolyline temp_line = new MapPolyline() //创建新的MapPolyline以绘制路径
+                        //    {
+                        //        StrokeColor = Colors.Cyan,
+                        //        StrokeThickness = 10,
+                        //        StrokeDashed = false
+                        //    };
+                        //    temp_line.Path = new Geopath(new List<BasicGeoposition>() //添加起始点和终点以设置MapPolyline的路径
+                        //{
+                        //    lines[lines.Count - 2],
+                        //    lines[lines.Count - 1]
+                        //});
+                        //    maps.MapElements.Add(temp_line); //将MapPolyline添加到地图控件中
+                    });
+                }
+                catch (Exception)
                 {
-                    lines[lines.Count - 2],
-                    lines[lines.Count - 1]
-                });
-                    maps.MapElements.Add(temp_line); //将MapPolyline添加到地图控件中
-                });
-            }
-            catch (Exception)
-            {
+                }
             }
         }
 
@@ -180,12 +244,22 @@ namespace MobileRun_Win.Control
             try
             {
                 Geoposition position = await geolocator.GetGeopositionAsync();
-                if (PositionJundge(GetDistance(lines[lines.Count - 1].Latitude, lines[lines.Count - 1].Longitude, position.Coordinate.Point.Position.Latitude, position.Coordinate.Point.Position.Longitude)))
+                if (PositionJundge(position.Coordinate.Point.Position.Latitude, position.Coordinate.Point.Position.Longitude))
                 {
                     last_date = DateTime.Now;
                     MapControl.SetLocation((maps.Children[0] as Grid), position.Coordinate.Point);
                     maps.Center = position.Coordinate.Point;
                 }
+                //if (PositionJundge(GetDistance(
+                //    lines[lines.Count - 1].Latitude,
+                //    lines[lines.Count - 1].Longitude,
+                //    position.Coordinate.Point.Position.Latitude,
+                //    position.Coordinate.Point.Position.Longitude)))
+                //{
+                //    last_date = DateTime.Now;
+                //    MapControl.SetLocation((maps.Children[0] as Grid), position.Coordinate.Point);
+                //    maps.Center = position.Coordinate.Point;
+                //}
             }
             catch (Exception)
             {

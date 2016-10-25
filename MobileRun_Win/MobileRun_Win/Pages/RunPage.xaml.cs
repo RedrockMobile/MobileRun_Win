@@ -28,6 +28,8 @@ namespace MobileRun_Win.Pages
     /// </summary>
     public sealed partial class RunPage : Page
     {
+        private int new_positions_file_length; //后台用于记录坐标的文件的总行数
+
         private Accelerometer accelerometer;
         private DeviceUseTrigger trigger;
         private DispatcherTimer timer;
@@ -37,6 +39,7 @@ namespace MobileRun_Win.Pages
         {
             this.InitializeComponent();
 
+            new_positions_file_length = 0;
             accelerometer = Accelerometer.GetDefault();
             if (accelerometer != null)
             {
@@ -44,10 +47,16 @@ namespace MobileRun_Win.Pages
                 timer = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 5) };
                 timer.Tick += Timer_Tick;
                 App.Current.Suspending += Current_Suspending;
+                App.Current.Resuming += Current_Resuming;
             }
         }
 
-        private void Current_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        private void Current_Resuming(object sender, object e) //在APP会到前台之前注明APP在前台
+        {
+            ApplicationData.Current.LocalSettings.Values["is_app_active"] = true;
+        }
+
+        private void Current_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e) //在APP挂起之前注明APP不在前台
         {
             var deferral = e.SuspendingOperation.GetDeferral();
             ApplicationData.Current.LocalSettings.Values["is_app_active"] = false;
@@ -62,9 +71,14 @@ namespace MobileRun_Win.Pages
                 StorageFile file = await folder.GetFileAsync("postions_list.txt");
                 if (file != null)
                 {
-                    report.Text = "";
-                    string lines = File.ReadAllText(file.Path);
-                    report.Text = lines;
+                    //string lines = File.ReadAllText(file.Path);
+                    //List<string> lines = (List<string>)(await FileIO.ReadLinesAsync(file, Windows.Storage.Streams.UnicodeEncoding.Utf8));
+                    string[] lines = File.ReadAllLines(file.Path, System.Text.Encoding.UTF8);
+                    if (lines.Length != new_positions_file_length)
+                    {
+                        maps.NewPositionsFromBack = lines;
+                        new_positions_file_length = lines.Length;
+                    }
                 }
             }
             catch (Exception)

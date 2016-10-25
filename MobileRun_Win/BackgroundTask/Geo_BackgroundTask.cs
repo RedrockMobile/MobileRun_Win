@@ -37,7 +37,6 @@ namespace BackgroundTask
                 accelerometer.ReportInterval = (minreport > 10) ? minreport : 10;
 
                 accelerometer.ReadingChanged += Accelerometer_ReadingChanged;
-                //geolocator.PositionChanged += Geolocator_PositionChanged;
 
                 Deferral = taskInstance.GetDeferral();
 
@@ -56,22 +55,13 @@ namespace BackgroundTask
                 if (folder != null)
                 {
                     StorageFile file = await folder.CreateFileAsync("postions_list.txt", started ? CreationCollisionOption.OpenIfExists : CreationCollisionOption.ReplaceExisting);
-                    string position = geoposition.Coordinate.Point.Position.Altitude.ToString() + "," + geoposition.Coordinate.Point.Position.Latitude.ToString() + "," + geoposition.Coordinate.Point.Position.Longitude.ToString();
+                    string position = geoposition.Coordinate.Point.Position.Altitude.ToString() +
+                                    "," + geoposition.Coordinate.Point.Position.Latitude.ToString() +
+                                    "," + geoposition.Coordinate.Point.Position.Longitude.ToString() +
+                                    "," + DateTime.Now.ToString();
                     File.AppendAllLines(file.Path, new List<string>() { position }, Encoding.UTF8);
                     started = true;
                 }
-            }
-        }
-
-        private async void Geolocator_PositionChanged(Geolocator sender, PositionChangedEventArgs args)
-        {
-            StorageFolder folder = ApplicationData.Current.LocalFolder;
-            if (folder != null)
-            {
-                StorageFile file = await folder.CreateFileAsync("postions_list.txt", started ? CreationCollisionOption.OpenIfExists : CreationCollisionOption.ReplaceExisting);
-                string position = args.Position.Coordinate.Point.Position.Altitude.ToString() + "," + args.Position.Coordinate.Point.Position.Latitude.ToString() + "," + args.Position.Coordinate.Point.Position.Longitude.ToString();
-                File.AppendAllLines(file.Path, new List<string>() { position }, Encoding.UTF8);
-                started = true;
             }
         }
 
@@ -80,9 +70,7 @@ namespace BackgroundTask
             if (accelerometer != null && geolocator != null)
             {
                 accelerometer.ReadingChanged -= Accelerometer_ReadingChanged;
-                //geolocator.PositionChanged -= Geolocator_PositionChanged;
                 accelerometer.ReportInterval = 0;
-                //geolocator.ReportInterval = 0;
                 if (timer != null)
                 {
                     timer.Dispose();
