@@ -101,6 +101,9 @@
     <Compile Include="Controls\RunMaps.xaml.cs">
       <DependentUpon>RunMaps.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helper\GetDistanceHelper.cs" />
+    <Compile Include="Helper\GetEndPoint.cs" />
+    <Compile Include="Helper\GradualChangedHelper.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

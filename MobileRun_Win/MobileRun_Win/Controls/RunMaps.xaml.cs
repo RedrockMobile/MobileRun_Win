@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -32,6 +33,9 @@ namespace MobileRun_Win.Controls
         private DateTime last_date;
         private Geolocator geolocator;
         private List<BasicGeoposition> lines;
+
+        private double total_distance = 0;
+        private double delta_distance = 0;
 
         public string[] NewPositionsFromBack //后台传来的新位置
         {
@@ -61,7 +65,13 @@ namespace MobileRun_Win.Controls
                             string[] new_params = rm.NewPositionsFromBack[i].Split(',');
                             rm.last_date = Convert.ToDateTime(new_params[3]);
                             if (rm.PositionJundge(Convert.ToDouble(new_params[1]), Convert.ToDouble(new_params[2])))
+                            {
+                                rm.delta_distance = rm.GetDistance(rm.lines[rm.lines.Count - 1].Latitude, rm.lines[rm.lines.Count - 1].Longitude, Convert.ToDouble(new_params[1]), Convert.ToDouble(new_params[2]));
+                                if (rm.delta_distance == 0.0 || rm.delta_distance == double.NaN || rm.total_distance == double.NaN)
+                                    return;
+                                rm.total_distance += rm.delta_distance;
                                 rm.AddNewPolyline(new_params[0], new_params[1], new_params[2]);
+                            }
                         }
                         MapControl.SetLocation((rm.maps.Children[0] as Grid), new Geopoint(rm.lines[rm.lines.Count - 1])); //将定位点设置到新的位置
                         rm.is_adding_new_positions_from_back = false;
@@ -100,22 +110,42 @@ namespace MobileRun_Win.Controls
 
         private async void AddNewPolyline(BasicGeoposition new_position) //在地图中绘制新的路径
         {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            try
             {
-                lines.Add(new_position); //将新的位置添加到点集合中
-                MapPolyline temp_line = new MapPolyline() //创建新的MapPolyline以绘制路径
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    StrokeColor = Colors.Purple,
-                    StrokeThickness = 5,
-                    StrokeDashed = false
-                };
-                temp_line.Path = new Geopath(new List<BasicGeoposition>() //添加起始点和终点以设置MapPolyline的路径
-                    {
-                        lines[lines.Count - 2],
-                        lines[lines.Count - 1]
-                    });
-                maps.MapElements.Add(temp_line); //将MapPolyline添加到地图控件中
-            });
+                    lines.Add(new_position); //将新的位置添加到点集合中
+                    //MapPolyline temp_line = new MapPolyline() //创建新的MapPolyline以绘制路径
+                    //{
+                    //    StrokeColor = Colors.Transparent,
+                    //    StrokeThickness = 0,
+                    //    StrokeDashed = false
+                    //};
+                    //temp_line.Path = new Geopath(new List<BasicGeoposition>() //添加起始点和终点以设置MapPolyline的路径
+                    //{
+                    //    lines[lines.Count - 2],
+                    //    lines[lines.Count - 1]
+                    //});
+                    //maps.MapElements.Add(temp_line); //将MapPolyline添加到地图控件中
+                    Point point1 = new Point();
+                    Point point2 = new Point();
+                    maps.GetOffsetFromLocation(new Geopoint(lines[lines.Count - 2]), out point1);
+                    maps.GetOffsetFromLocation(new Geopoint(lines[lines.Count - 1]), out point2);
+                    Polyline line = new Polyline();
+                    line.Points.Add(new Point(0, 0));
+                    double third = Math.Sqrt((Math.Pow((point1.X - point2.X), 2) + Math.Pow((point1.Y - point2.Y), 2)));
+                    third = delta_distance / third;
+                    line.Points.Add(new Point(((point2.X - point1.X) * third), ((point2.Y - point1.Y) * third)));
+                    line.Stroke = Helper.GradualChangedHelper.GradualChanged(total_distance, delta_distance);
+                    line.StrokeThickness = 5;
+                    Canvas.SetZIndex(line, 0);
+                    maps.Children.Add(line);
+                    MapControl.SetLocation(line, new Geopoint(lines[lines.Count - 1]));
+                });
+            }
+            catch (Exception)
+            {
+            }
         }
 
         private async void GetLoaction()
@@ -176,6 +206,7 @@ namespace MobileRun_Win.Controls
             else
             {
                 this.distance.Text = "位置移动了" + distance + "m";
+                delta_distance = distance;
                 return true;
             }
         }
@@ -204,7 +235,11 @@ namespace MobileRun_Win.Controls
                         };
                         if (!PositionJundge(now_position.Latitude, now_position.Longitude))
                             return;
+                        delta_distance = GetDistance(lines[lines.Count - 1].Latitude, lines[lines.Count - 1].Longitude, now_position.Latitude, now_position.Longitude);
+                        if (delta_distance == 0.0 || delta_distance == double.NaN || total_distance == double.NaN)
+                            return;
                         AddNewPolyline(now_position);
+                        total_distance += delta_distance;
                         MapControl.SetLocation((maps.Children[0] as Grid), new Geopoint(now_position)); //将定位点设置到新的位置
                     });
                 }

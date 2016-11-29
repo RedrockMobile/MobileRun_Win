@@ -32,9 +32,15 @@ namespace MobileRun_Win.Pages
         {
             base.OnNavigatedTo(e);
 
-            StatusBar.GetForCurrentView().ForegroundColor = Windows.UI.Colors.White;
-            StatusBar.GetForCurrentView().BackgroundColor = Windows.UI.Color.FromArgb(255, 69, 61, 126);
-            StatusBar.GetForCurrentView().BackgroundOpacity = 1;
+            try
+            {
+                StatusBar.GetForCurrentView().ForegroundColor = Windows.UI.Colors.White;
+                StatusBar.GetForCurrentView().BackgroundColor = Windows.UI.Color.FromArgb(255, 69, 61, 126);
+                StatusBar.GetForCurrentView().BackgroundOpacity = 1;
+            }
+            catch (Exception)
+            {
+            }
         }
 
         private void login_but_Click(object sender, RoutedEventArgs e)

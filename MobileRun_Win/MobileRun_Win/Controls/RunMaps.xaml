@@ -11,8 +11,8 @@
     d:DesignWidth="400">
 
     <Grid>
-        <maps:MapControl x:Name="maps" BusinessLandmarksVisible="True" LandmarksVisible="True" MapServiceToken="T4DeccT6HfMqdeqjZz3i~2n9-MSjYsGdZeEf6jfWfUg~Ak__Dqs4NC81SlS4yrjnIOAtSg6GHJwwD9pX0hDaiZUMebq0q8UEGn714k60FduQ" ZoomLevel="18">
-            <Grid x:Name="user_point">
+        <maps:MapControl x:Name="maps" BusinessLandmarksVisible="True" LandmarksVisible="True" MapServiceToken="T4DeccT6HfMqdeqjZz3i~2n9-MSjYsGdZeEf6jfWfUg~Ak__Dqs4NC81SlS4yrjnIOAtSg6GHJwwD9pX0hDaiZUMebq0q8UEGn714k60FduQ" ZoomLevel="16.5">
+            <Grid x:Name="user_point" Canvas.ZIndex="5">
                 <Ellipse Height="19" Width="19" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center"></Ellipse>
                 <Ellipse Height="6.5" Width="6.5" Fill="#8C55AC" HorizontalAlignment="Center" VerticalAlignment="Center"></Ellipse>
                 <Grid.RenderTransform>
