@@ -23,7 +23,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace MobileRun_Win.Control
+namespace MobileRun_Win.Controls
 {
     public sealed partial class RunMaps : UserControl
     {
@@ -105,8 +105,8 @@ namespace MobileRun_Win.Control
                 lines.Add(new_position); //将新的位置添加到点集合中
                 MapPolyline temp_line = new MapPolyline() //创建新的MapPolyline以绘制路径
                 {
-                    StrokeColor = Colors.Cyan,
-                    StrokeThickness = 10,
+                    StrokeColor = Colors.Purple,
+                    StrokeThickness = 5,
                     StrokeDashed = false
                 };
                 temp_line.Path = new Geopath(new List<BasicGeoposition>() //添加起始点和终点以设置MapPolyline的路径
@@ -155,7 +155,6 @@ namespace MobileRun_Win.Control
         {
             if (lines.Count > 0) //获取上一次的位置并且计算两点距离
             {
-                //double last_altitude = lines[lines.Count - 1].Altitude;
                 double last_latitude = lines[lines.Count - 1].Latitude;
                 double last_longitude = lines[lines.Count - 1].Longitude;
                 double distance = GetDistance(last_latitude, last_longitude, latitude, longtitude);
@@ -172,7 +171,7 @@ namespace MobileRun_Win.Control
         private bool PositionJundge(double distance) //判断距离改变是否合理
         {
             TimeSpan time_delta = DateTime.Now - last_date;
-            if ((distance) / (time_delta.TotalSeconds) > 5) //判断标准：人正常跑步的速度为4m/s左右
+            if ((distance) / (time_delta.TotalSeconds) > 5 || distance > 30) //判断标准：人正常跑步的速度为4m/s左右
                 return false;
             else
             {
@@ -205,32 +204,8 @@ namespace MobileRun_Win.Control
                         };
                         if (!PositionJundge(now_position.Latitude, now_position.Longitude))
                             return;
-                        //if (lines.Count > 0) //获取上一次的位置并且计算两点距离
-                        //{
-                        //    double last_altitude = lines[lines.Count - 1].Altitude;
-                        //    double last_latitude = lines[lines.Count - 1].Latitude;
-                        //    double last_longitude = lines[lines.Count - 1].Longitude;
-                        //    double distance = GetDistance(last_latitude, last_longitude, now_position.Latitude, now_position.Longitude);
-                        //    if (!PositionJundge(distance))
-                        //        return;
-                        //    last_date = DateTime.Now;
-                        //    Debug.WriteLine(distance);
-                        //}
                         AddNewPolyline(now_position);
                         MapControl.SetLocation((maps.Children[0] as Grid), new Geopoint(now_position)); //将定位点设置到新的位置
-                        //    lines.Add(now_position); //将新的位置添加到点集合中
-                        //    MapPolyline temp_line = new MapPolyline() //创建新的MapPolyline以绘制路径
-                        //    {
-                        //        StrokeColor = Colors.Cyan,
-                        //        StrokeThickness = 10,
-                        //        StrokeDashed = false
-                        //    };
-                        //    temp_line.Path = new Geopath(new List<BasicGeoposition>() //添加起始点和终点以设置MapPolyline的路径
-                        //{
-                        //    lines[lines.Count - 2],
-                        //    lines[lines.Count - 1]
-                        //});
-                        //    maps.MapElements.Add(temp_line); //将MapPolyline添加到地图控件中
                     });
                 }
                 catch (Exception)
@@ -250,16 +225,6 @@ namespace MobileRun_Win.Control
                     MapControl.SetLocation((maps.Children[0] as Grid), position.Coordinate.Point);
                     maps.Center = position.Coordinate.Point;
                 }
-                //if (PositionJundge(GetDistance(
-                //    lines[lines.Count - 1].Latitude,
-                //    lines[lines.Count - 1].Longitude,
-                //    position.Coordinate.Point.Position.Latitude,
-                //    position.Coordinate.Point.Position.Longitude)))
-                //{
-                //    last_date = DateTime.Now;
-                //    MapControl.SetLocation((maps.Children[0] as Grid), position.Coordinate.Point);
-                //    maps.Center = position.Coordinate.Point;
-                //}
             }
             catch (Exception)
             {

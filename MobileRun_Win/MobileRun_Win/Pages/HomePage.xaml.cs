@@ -5,32 +5,25 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using Windows.Devices.Geolocation;
-using Windows.System;
-using Windows.UI.Core;
-using System.Diagnostics;
-using Windows.UI.Xaml.Controls.Maps;
-using Windows.UI;
 
-//“空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 上有介绍
+// “空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=234238 上有介绍
 
-namespace MobileRun_Win
+namespace MobileRun_Win.Pages
 {
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
     /// </summary>
-    public sealed partial class MainPage : Page
+    public sealed partial class HomePage : Page
     {
-
-        public MainPage()
+        public HomePage()
         {
             this.InitializeComponent();
         }
@@ -39,10 +32,9 @@ namespace MobileRun_Win
         {
             base.OnNavigatedTo(e);
 
-            if (e.NavigationMode == NavigationMode.New)
-            {
-                main_frame.Navigate(typeof(Pages.LoginPage));
-            }
+            StatusBar.GetForCurrentView().ForegroundColor = Windows.UI.Colors.Black;
+            StatusBar.GetForCurrentView().BackgroundColor = Windows.UI.Color.FromArgb(255, 242, 246, 247);
+            StatusBar.GetForCurrentView().BackgroundOpacity = 1;
         }
     }
 }

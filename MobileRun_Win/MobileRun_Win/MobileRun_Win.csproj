@@ -98,11 +98,17 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\RunMaps.xaml.cs">
+    <Compile Include="Controls\RunMaps.xaml.cs">
       <DependentUpon>RunMaps.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\HomePage.xaml.cs">
+      <DependentUpon>HomePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\LoginPage.xaml.cs">
+      <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\RunPage.xaml.cs">
       <DependentUpon>RunPage.xaml</DependentUpon>
@@ -116,6 +122,12 @@
     <None Include="MobileRun_Win_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\LoginPage\Group 4.png" />
+    <Content Include="Assets\LoginPage\logo头像.png" />
+    <Content Include="Assets\LoginPage\个人.png" />
+    <Content Include="Assets\LoginPage\密码 %286%29.png" />
+    <Content Include="Assets\LoginPage\约跑logo.png" />
+    <Content Include="Assets\LoginPage\背景.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -130,13 +142,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Control\RunMaps.xaml">
+    <Page Include="Controls\RunMaps.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\LoginPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\RunPage.xaml">
       <SubType>Designer</SubType>
@@ -148,6 +168,11 @@
       <Project>{bb8e99d5-77f8-467d-a6c2-772425eee7c0}</Project>
       <Name>BackgroundTask</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="WindowsMobile, Version=10.0.10586.0">
+      <Name>Windows Mobile Extensions for the UWP</Name>
+    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

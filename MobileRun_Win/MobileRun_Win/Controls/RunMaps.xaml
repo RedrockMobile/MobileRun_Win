@@ -1,8 +1,8 @@
 ﻿<UserControl
-    x:Class="MobileRun_Win.Control.RunMaps"
+    x:Class="MobileRun_Win.Controls.RunMaps"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:MobileRun_Win.Control"
+    xmlns:local="using:MobileRun_Win.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
@@ -11,10 +11,13 @@
     d:DesignWidth="400">
 
     <Grid>
-        <maps:MapControl x:Name="maps" MapServiceToken="T4DeccT6HfMqdeqjZz3i~2n9-MSjYsGdZeEf6jfWfUg~Ak__Dqs4NC81SlS4yrjnIOAtSg6GHJwwD9pX0hDaiZUMebq0q8UEGn714k60FduQ" ZoomLevel="18">
+        <maps:MapControl x:Name="maps" BusinessLandmarksVisible="True" LandmarksVisible="True" MapServiceToken="T4DeccT6HfMqdeqjZz3i~2n9-MSjYsGdZeEf6jfWfUg~Ak__Dqs4NC81SlS4yrjnIOAtSg6GHJwwD9pX0hDaiZUMebq0q8UEGn714k60FduQ" ZoomLevel="18">
             <Grid x:Name="user_point">
-                <Ellipse Height="25" Width="25" Stroke="Gray" StrokeThickness="2" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center"></Ellipse>
-                <Ellipse Height="13" Width="13" Fill="Gray" HorizontalAlignment="Center" VerticalAlignment="Center"></Ellipse>
+                <Ellipse Height="19" Width="19" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center"></Ellipse>
+                <Ellipse Height="6.5" Width="6.5" Fill="#8C55AC" HorizontalAlignment="Center" VerticalAlignment="Center"></Ellipse>
+                <Grid.RenderTransform>
+                    <TranslateTransform X="-9.5" Y="-9.5"></TranslateTransform>
+                </Grid.RenderTransform>
             </Grid>
         </maps:MapControl>
         <StackPanel x:Name="command_board" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Top">
