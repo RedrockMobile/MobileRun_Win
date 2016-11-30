@@ -95,18 +95,20 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\MobileRunAPI.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\RunMaps.xaml.cs">
       <DependentUpon>RunMaps.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Helper\GetDistanceHelper.cs" />
     <Compile Include="Helper\GetEndPoint.cs" />
     <Compile Include="Helper\GradualChangedHelper.cs" />
+    <Compile Include="HttpRequests\MobileRunHttpClient.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\User.cs" />
     <Compile Include="Pages\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
@@ -116,7 +118,10 @@
     <Compile Include="Pages\RunPage.xaml.cs">
       <DependentUpon>RunPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Params\APIParams.cs" />
+    <Compile Include="Params\ClientParams.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\HomePageViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -125,6 +130,16 @@
     <None Include="MobileRun_Win_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\HomePage\Group 11.png" />
+    <Content Include="Assets\HomePage\Group 13.png" />
+    <Content Include="Assets\HomePage\Group.png" />
+    <Content Include="Assets\HomePage\_查看更多箭头.png" />
+    <Content Include="Assets\HomePage\头像.png" />
+    <Content Include="Assets\HomePage\按钮背景.png" />
+    <Content Include="Assets\HomePage\跑步记录icon.png" />
+    <Content Include="Assets\HomePage\跑步记录按钮背景底.png" />
+    <Content Include="Assets\HomePage\路程按钮icon.png" />
+    <Content Include="Assets\HomePage\里程周围旋转圈.png" />
     <Content Include="Assets\LoginPage\Group 4.png" />
     <Content Include="Assets\LoginPage\logo头像.png" />
     <Content Include="Assets\LoginPage\个人.png" />
@@ -177,6 +192,7 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

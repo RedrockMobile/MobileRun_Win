@@ -41,7 +41,10 @@ namespace MobileRun_Win
 
             if (e.NavigationMode == NavigationMode.New)
             {
-                main_frame.Navigate(typeof(Pages.LoginPage));
+                if (!App.settings.Values.ContainsKey(Params.ClientParams.user_token))
+                    main_frame.Navigate(typeof(Pages.LoginPage));
+                else
+                    main_frame.Navigate(typeof(Pages.HomePage));
             }
         }
     }

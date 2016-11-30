@@ -5,9 +5,155 @@
     xmlns:local="using:MobileRun_Win.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodel="using:MobileRun_Win.ViewModel"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.DataContext>
+        <viewmodel:HomePageViewModel></viewmodel:HomePageViewModel>
+    </Page.DataContext>
 
+    <Page.Resources>
+        <Storyboard x:Name="RotateRing_SB">
+            <DoubleAnimation Storyboard.TargetName="ring_rtf" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:1"></DoubleAnimation>
+        </Storyboard>
+    </Page.Resources>
+
+    <Grid Background="#F3F6F8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Image HorizontalAlignment="Right" VerticalAlignment="Top" Height="258" Width="239.5" Source="ms-appx:///Assets/HomePage/跑步记录按钮背景底.png"></Image>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="4*"></RowDefinition>
+                    <RowDefinition Height="5*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Background="#F2F6F7">
+                    <Button x:Name="user" Height="32.5" Width="33" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21.5,5.5,0,5.5" Style="{StaticResource NullButtonStyle}">
+                        <Image x:Name="user_img" Stretch="Uniform" Source="ms-appx:///Assets/HomePage/头像.png"></Image>
+                    </Button>
+                    <TextBlock x:Name="user_name" Text="{Binding UserName}" Foreground="#000029" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Microsoft YaHei" FontSize="18"></TextBlock>
+                    <Button x:Name="share_but" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,21.5,0" Style="{StaticResource NullButtonStyle}">
+                        <Image Source="ms-appx:///Assets/HomePage/Group.png"></Image>
+                    </Button>
+                </Grid>
+                <Grid Grid.Row="1" Margin="32,0,32,0">
+                    <Button x:Name="rankings_but" HorizontalAlignment="Left" VerticalAlignment="Center" Style="{StaticResource NullButtonStyle}">
+                        <Grid>
+                            <!--<win2d:CanvasControl Height="54" Width="54" Draw="canvas_Draw"></win2d:CanvasControl>-->
+                            <Canvas x:Name="rankings_but_canvas" Height="54" Width="54" Loaded="rankings_but_canvas_Loaded"></Canvas>
+                            <Ellipse Height="46" Width="46" Fill="#FBFCFC"></Ellipse>
+                            <Image Height="26" Width="26" Source="ms-appx:///Assets/HomePage/Group 11.png"></Image>
+                        </Grid>
+                    </Button>
+                    <Image x:Name="rotate_ring" Height="158" Width="162.5" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="UniformToFill" Source="ms-appx:///Assets/HomePage/里程周围旋转圈.png">
+                        <Image.RenderTransform>
+                            <RotateTransform x:Name="ring_rtf" Angle="0" CenterX="79" CenterY="79"></RotateTransform>
+                        </Image.RenderTransform>
+                    </Image>
+                    <Grid Height="158" Width="158" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <StackPanel>
+                            <TextBlock Text="当天里程" FontSize="12" Foreground="#878DAC" HorizontalAlignment="Center" Margin="0,35,0,0"></TextBlock>
+                            <TextBlock Text="2.37" FontSize="55" Foreground="#130F56" HorizontalAlignment="Center" FontWeight="SemiBold" Height="61" Margin="0,-12,0,0.5"></TextBlock>
+                            <TextBlock Text="KM" FontSize="24.5" Foreground="#ABB0CD" HorizontalAlignment="Center" Margin="0,0,0,0"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                    <Button x:Name="history_but" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource NullButtonStyle}">
+                        <Grid>
+                            <!--<win2d:CanvasControl Height="54" Width="54" Draw="canvas_Draw"></win2d:CanvasControl>-->
+                            <Canvas x:Name="history_but_canvas" Height="46" Width="46" Loaded="history_but_canvas_Loaded"></Canvas>
+                            <Ellipse Height="46" Width="46" Fill="#FBFCFC"></Ellipse>
+                            <Image Height="26" Width="26" Source="ms-appx:///Assets/HomePage/路程按钮icon.png"></Image>
+                        </Grid>
+                    </Button>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Line Grid.Row="1" VerticalAlignment="Top" Stroke="#BEC2D9" X1="0" Y1="0" X2="10" Y2="0" StrokeThickness="1" Stretch="Fill" Opacity="0.3715" Margin="20.5,0,20.5,0"></Line>
+                    <StackPanel Grid.Row="0" VerticalAlignment="Center" Margin="20.5,0,20.5,0">
+                        <StackPanel Orientation="Horizontal" Height="20">
+                            <Image Margin="1.5,0,0,0" Height="16" Width="16" VerticalAlignment="Center" Source="ms-appx:///Assets/HomePage/跑步记录icon.png"></Image>
+                            <TextBlock Text="跑步记录" FontSize="14" Foreground="#9F9FB7" VerticalAlignment="Center" Margin="10.5,0,0,0"></TextBlock>
+                        </StackPanel>
+                        <Grid Margin="0,18.5,0,0">
+                            <StackPanel>
+                                <TextBlock Text="路程" FontSize="14" Foreground="#9F9FB7"></TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock x:Name="history_distance" Text="12.37" Foreground="#000029" FontSize="31.5" FontWeight="Medium" Height="35"></TextBlock>
+                                    <TextBlock Text="km" Foreground="#ABB0CD" FontSize="13" VerticalAlignment="Bottom" Margin="3.5,0,0,0"></TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Margin="166.5,0,0,0">
+                                <TextBlock Text="时间" FontSize="14" Foreground="#9F9FB7"></TextBlock>
+                                <TextBlock x:Name="history_during" Text="01:40:03" Foreground="#000029" FontSize="31.5" FontWeight="Medium" Height="35"></TextBlock>
+                            </StackPanel>
+                            <Button x:Name="history_more_but" Height="16" Width="6.5" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="51.5,0,0.5,0" Style="{StaticResource NullButtonStyle}">
+                                <Image Source="ms-appx:///Assets/HomePage/_查看更多箭头.png"></Image>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                    <Grid Grid.Row="1" VerticalAlignment="Center" Margin="20.5,0,20.5,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Margin="1.5,0,0,0" Height="16" Width="16" VerticalAlignment="Center" Source="ms-appx:///Assets/HomePage/Group 13.png"></Image>
+                            <TextBlock Text="排行榜" FontSize="14" Foreground="#9F9FB7" VerticalAlignment="Center" Margin="10.5,0,0,0"></TextBlock>
+                        </StackPanel>
+                        <Grid Grid.Row="1" Margin="0,18.5,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="名次" Grid.Row="0" FontSize="14" Foreground="#9F9FB7" VerticalAlignment="Center"></TextBlock>
+                            <StackPanel Grid.Row="1" VerticalAlignment="Center" Orientation="Horizontal">
+                                <TextBlock x:Name="my_number" Text="18" Foreground="#000029" FontSize="31.5" FontWeight="Medium"></TextBlock>
+                                <TextBlock Text="名" Foreground="#ABB0CD" FontSize="13" VerticalAlignment="Center" Margin="3.5,8,0,0"></TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal" Margin="166.5,0,0,0">
+                                <TextBlock Text="路程" FontSize="14" Foreground="#9F9FB7"></TextBlock>
+                                <TextBlock x:Name="distance_in_rankings" Text="12.37" Foreground="#41416B" FontSize="12" VerticalAlignment="Bottom" Margin="5,0,0,0"></TextBlock>
+                                <TextBlock Text="km" FontSize="13" Foreground="#ABB0CD" VerticalAlignment="Bottom" Margin="6.5,0,0,0" Height="15"></TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal" Margin="166.5,8,0,0">
+                                <TextBlock Text="距离上一名还差" FontSize="12" Foreground="#ABB0CD" VerticalAlignment="Center"></TextBlock>
+                                <TextBlock x:Name="distance_with_next" Text="12" Foreground="#42426C" FontSize="12" VerticalAlignment="Center" Margin="5,0,0,0"></TextBlock>
+                                <TextBlock Text="km" FontSize="12" Foreground="#ABB0CD" VerticalAlignment="Center" Margin="3.5,0,0,0" Height="14"></TextBlock>
+                            </StackPanel>
+                            <Button x:Name="rankings_more_but" Grid.RowSpan="2" Grid.Column="1" Height="16" Width="6.5" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,0.5,0" Style="{StaticResource NullButtonStyle}">
+                                <Image Source="ms-appx:///Assets/HomePage/_查看更多箭头.png"></Image>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Image HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Stretch="Uniform" Source="ms-appx:///Assets/HomePage/按钮背景.png"></Image>
+                <Button x:Name="start_but" HorizontalAlignment="Center" VerticalAlignment="Bottom" Style="{StaticResource NullButtonStyle}" Margin="0,0,0,8" Click="start_but_Click">
+                    <Grid>
+                        <!--<win2d:CanvasControl x:Name="start_but_canvas" Height="110" Width="110" Draw="start_but_canvas_Draw"></win2d:CanvasControl>-->
+                        <!--<Canvas x:Name="start_but_canvas" Height="110" Width="110" Loaded="start_but_canvas_Loaded"></Canvas>-->
+                        <Grid>
+                            <Ellipse Height="86" Width="86">
+                                <Ellipse.Fill>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <GradientStop Color="#FC7F60" Offset="0"/>
+                                        <GradientStop Color="#D85357" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <TextBlock Text="开始跑步" FontSize="18" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Width="36.5" FontWeight="Medium" FontFamily="Microsoft YaHei UI"></TextBlock>
+                        </Grid>
+                    </Grid>
+                </Button>
+            </Grid>
+        </Grid>
     </Grid>
 </Page>

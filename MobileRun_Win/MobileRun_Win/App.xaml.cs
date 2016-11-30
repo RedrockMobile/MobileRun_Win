@@ -26,6 +26,8 @@ namespace MobileRun_Win
         public const string geolocator_task_name = "GeoBackgroundTask";
         public const string geolocator_task_entrypoint = "BackgroundTask.Geo_BackgroundTask";
 
+        public static ApplicationDataContainer settings = ApplicationData.Current.LocalSettings;
+
         /// <summary>
         /// 初始化单一实例应用程序对象。这是执行的创作代码的第一行，
         /// 已执行，逻辑上等同于 main() 或 WinMain()。

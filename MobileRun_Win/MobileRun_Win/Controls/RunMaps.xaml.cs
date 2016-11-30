@@ -73,7 +73,7 @@ namespace MobileRun_Win.Controls
                                 rm.AddNewPolyline(new_params[0], new_params[1], new_params[2]);
                             }
                         }
-                        MapControl.SetLocation((rm.maps.Children[0] as Grid), new Geopoint(rm.lines[rm.lines.Count - 1])); //将定位点设置到新的位置
+                        MapControl.SetLocation((rm.maps.Children.Last() as Grid), new Geopoint(rm.lines[rm.lines.Count - 1])); //将定位点设置到新的位置
                         rm.is_adding_new_positions_from_back = false;
                     });
                     StorageFolder folder = ApplicationData.Current.LocalFolder;
@@ -132,15 +132,16 @@ namespace MobileRun_Win.Controls
                     maps.GetOffsetFromLocation(new Geopoint(lines[lines.Count - 2]), out point1);
                     maps.GetOffsetFromLocation(new Geopoint(lines[lines.Count - 1]), out point2);
                     Polyline line = new Polyline();
-                    line.Points.Add(new Point(0, 0));
-                    double third = Math.Sqrt((Math.Pow((point1.X - point2.X), 2) + Math.Pow((point1.Y - point2.Y), 2)));
-                    third = delta_distance / third;
-                    line.Points.Add(new Point(((point2.X - point1.X) * third), ((point2.Y - point1.Y) * third)));
+                    line.Points.Add(point1);
+                    line.Points.Add(point2);
                     line.Stroke = Helper.GradualChangedHelper.GradualChanged(total_distance, delta_distance);
                     line.StrokeThickness = 5;
-                    Canvas.SetZIndex(line, 0);
+                    line.StrokeStartLineCap = PenLineCap.Round;
+                    line.StrokeEndLineCap = PenLineCap.Round;
                     maps.Children.Add(line);
-                    MapControl.SetLocation(line, new Geopoint(lines[lines.Count - 1]));
+                    Geopoint point3 = new Geopoint(lines[lines.Count - 1]);
+                    maps.GetLocationFromOffset(new Point(0, 0), out point3);
+                    MapControl.SetLocation(line, point3);
                 });
             }
             catch (Exception)
@@ -178,7 +179,7 @@ namespace MobileRun_Win.Controls
             last_date = DateTime.Now; //将此刻的时间保存
             geolocator.PositionChanged += Geolocator_PositionChanged;
             maps.Center = new Geopoint(basicgeoposition);
-            MapControl.SetLocation((maps.Children[0] as Grid), maps.Center); //将定位点设置到地图中心
+            MapControl.SetLocation((maps.Children.Last() as Grid), maps.Center); //将定位点设置到地图中心
         }
 
         private bool PositionJundge(double latitude, double longtitude)
@@ -240,7 +241,7 @@ namespace MobileRun_Win.Controls
                             return;
                         AddNewPolyline(now_position);
                         total_distance += delta_distance;
-                        MapControl.SetLocation((maps.Children[0] as Grid), new Geopoint(now_position)); //将定位点设置到新的位置
+                        MapControl.SetLocation((maps.Children.Last() as Grid), new Geopoint(now_position)); //将定位点设置到新的位置
                     });
                 }
                 catch (Exception)
@@ -257,7 +258,7 @@ namespace MobileRun_Win.Controls
                 if (PositionJundge(position.Coordinate.Point.Position.Latitude, position.Coordinate.Point.Position.Longitude))
                 {
                     last_date = DateTime.Now;
-                    MapControl.SetLocation((maps.Children[0] as Grid), position.Coordinate.Point);
+                    MapControl.SetLocation((maps.Children.Last() as Grid), position.Coordinate.Point);
                     maps.Center = position.Coordinate.Point;
                 }
             }

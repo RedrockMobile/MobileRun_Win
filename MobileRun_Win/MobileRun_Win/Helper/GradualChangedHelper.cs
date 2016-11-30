@@ -11,7 +11,7 @@ namespace MobileRun_Win.Helper
 {
     public class GradualChangedHelper
     {
-        private const double _distance = 500; //颜色渐变的范围距离，单位m
+        private const double _distance = 700; //颜色渐变的范围距离，单位m
         private static readonly Color _color1 = Color.FromArgb(255, 246, 100, 135);
         private static readonly Color _color2 = Color.FromArgb(255, 241, 99, 133);
         private static readonly Color _color3 = Color.FromArgb(255, 148, 93, 179);
